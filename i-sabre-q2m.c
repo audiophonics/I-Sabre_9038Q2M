@@ -41,7 +41,7 @@ static int snd_rpi_i_sabre_q2m_init(struct snd_soc_pcm_runtime *rtd)
 
 	/* API revision */
 	value = snd_soc_component_read32(component, ISABRECODEC_REG_02);
-	dev_info(component->card->dev, "Audiophonics API revision : %02X\n", value)
+	dev_info(component->card->dev, "Audiophonics API revision : %02X\n", value);
 
 	return 0;
 }
