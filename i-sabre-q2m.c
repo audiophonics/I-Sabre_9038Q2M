@@ -3,7 +3,8 @@
  *
  * Author: Satoru Kawase
  * Modified by: Xiao Qingyong
- *      Copyright 2018 Audiophonics
+ * Update kernel v4.18+ by : Audiophonics
+ * 		Copyright 2018 Audiophonics
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,13 +35,13 @@ static int snd_rpi_i_sabre_q2m_init(struct snd_soc_pcm_runtime *rtd)
 	struct snd_soc_component *component = rtd->codec_dai->component;
 	unsigned int value;
 
-
-	value = snd_soc_read(codec, ISABRECODEC_REG_01);
+	/* Device ID */
+	value = snd_soc_component_read32(component, ISABRECODEC_REG_01);
 	dev_info(component->card->dev, "Audiophonics Device ID : %02X\n", value);
 
-
-	value = snd_soc_read(codec, ISABRECODEC_REG_02);
-	dev_info(component->card->dev, "Audiophonics API revision : %02X\n", value);
+	/* API revision */
+	value = snd_soc_component_read32(component, ISABRECODEC_REG_02);
+	dev_info(component->card->dev, "Audiophonics API revision : %02X\n", value)
 
 	return 0;
 }
