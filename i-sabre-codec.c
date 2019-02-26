@@ -4,7 +4,8 @@
  * Author: Satoru Kawase
  * Modified by: Xiao Qingyong
  * Modified by: JC BARBAUD (Mute)
- *      Copyright 2018 Audiophonics
+ * Update kernel v4.18+ by : Audiophonics
+ * 		Copyright 2018 Audiophonics
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
