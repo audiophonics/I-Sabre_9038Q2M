@@ -143,13 +143,13 @@ static const struct snd_pcm_hw_constraint_list constraints_slave = {
 static int i_sabre_codec_dai_startup_slave(
 		struct snd_pcm_substream *substream, struct snd_soc_dai *dai)
 {
-	struct snd_soc_codec *codec = dai->codec;
+	struct snd_soc_component *component = dai->component;
 	int ret;
 
 	ret = snd_pcm_hw_constraint_list(substream->runtime,
 			0, SNDRV_PCM_HW_PARAM_RATE, &constraints_slave);
 	if (ret != 0) {
-		dev_err(codec->dev, "Failed to setup rates constraints: %d\n", ret);
+		dev_err(component->card->dev, "Failed to setup rates constraints: %d\n", ret);
 	}
 
 	return ret;
@@ -158,9 +158,9 @@ static int i_sabre_codec_dai_startup_slave(
 static int i_sabre_codec_dai_startup(
 		struct snd_pcm_substream *substream, struct snd_soc_dai *dai)
 {
-	struct snd_soc_codec      *codec = dai->codec;
+	struct snd_soc_component      *component = dai->component;
 	struct i_sabre_codec_priv *i_sabre_codec
-					= snd_soc_codec_get_drvdata(codec);
+					= snd_soc_component_get_drvdata(component);
 
 	switch (i_sabre_codec->fmt & SND_SOC_DAIFMT_MASTER_MASK) {
 	case SND_SOC_DAIFMT_CBS_CFS:
@@ -175,19 +175,19 @@ static int i_sabre_codec_hw_params(
 	struct snd_pcm_substream *substream, struct snd_pcm_hw_params *params,
 	struct snd_soc_dai *dai)
 {
-	struct snd_soc_codec      *codec = dai->codec;
+	struct snd_soc_component      *component = dai->component;
 	struct i_sabre_codec_priv *i_sabre_codec
-					= snd_soc_codec_get_drvdata(codec);
+					= snd_soc_component_get_drvdata(component);
 	unsigned int daifmt;
 	int format_width;
 
-	dev_dbg(codec->dev, "hw_params %u Hz, %u channels\n",
+	dev_dbg(component->card->dev, "hw_params %u Hz, %u channels\n",
 			params_rate(params), params_channels(params));
 
 	/* Check I2S Format (Bit Size) */
 	format_width = snd_pcm_format_width(params_format(params));
 	if ((format_width != 32) && (format_width != 16)) {
-		dev_err(codec->dev, "Bad frame size: %d\n",
+		dev_err(component->card->dev, "Bad frame size: %d\n",
 				snd_pcm_format_width(params_format(params)));
 		return (-EINVAL);
 	}
@@ -207,7 +207,7 @@ static int i_sabre_codec_hw_params(
 	case 96000:
 	case 176400:
 	case 192000:
-		snd_soc_update_bits(codec, ISABRECODEC_REG_10, 0x01, 0x00);
+		snd_soc_component_update_bits(component, ISABRECODEC_REG_10, 0x01, 0x00);
 		break;
 
 	case 352800:
@@ -216,7 +216,7 @@ static int i_sabre_codec_hw_params(
 	case 768000:
 	case 1411200:
 	case 1536000:
-		snd_soc_update_bits(codec, ISABRECODEC_REG_10, 0x01, 0x01);
+		snd_soc_component_update_bits(component, ISABRECODEC_REG_10, 0x01, 0x01);
 		break;
 	}
 
@@ -225,9 +225,9 @@ static int i_sabre_codec_hw_params(
 
 static int i_sabre_codec_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
-	struct snd_soc_codec      *codec = dai->codec;
+	struct snd_soc_component      *component = dai->component;
 	struct i_sabre_codec_priv *i_sabre_codec
-					= snd_soc_codec_get_drvdata(codec);
+					= snd_soc_component_get_drvdata(component);
 
 	/* interface format */
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
@@ -253,12 +253,12 @@ static int i_sabre_codec_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 
 static int i_sabre_codec_dac_mute(struct snd_soc_dai *dai, int mute)
 {
-	struct snd_soc_codec *codec = dai->codec;
+	struct snd_soc_component *component = dai->component;
 
 	if (mute) {
-		snd_soc_update_bits(codec, ISABRECODEC_REG_21, 0x01, 0x01);
+		snd_soc_component_update_bits(component, ISABRECODEC_REG_21, 0x01, 0x01);
 	} else {
-		snd_soc_update_bits(codec, ISABRECODEC_REG_21, 0x01, 0x00);
+		snd_soc_component_update_bits(component, ISABRECODEC_REG_21, 0x01, 0x00);
 	}
 
 	return 0;
@@ -287,11 +287,9 @@ static struct snd_soc_dai_driver i_sabre_codec_dai = {
 	.ops = &i_sabre_codec_dai_ops,
 };
 
-static struct snd_soc_codec_driver i_sabre_codec_codec_driver = {
-	.component_driver = {
+static struct snd_soc_component_driver i_sabre_codec_codec_driver = {
 		.controls         = i_sabre_codec_controls,
 		.num_controls     = ARRAY_SIZE(i_sabre_codec_controls),
-	}
 };
 
 
@@ -326,7 +324,7 @@ static int i_sabre_codec_probe(struct device *dev, struct regmap *regmap)
 
 	dev_set_drvdata(dev, i_sabre_codec);
 
-	ret = snd_soc_register_codec(dev,
+	ret = snd_soc_register_component(dev,
 			&i_sabre_codec_codec_driver, &i_sabre_codec_dai, 1);
 	if (ret != 0) {
 		dev_err(dev, "Failed to register CODEC: %d\n", ret);
@@ -338,7 +336,7 @@ static int i_sabre_codec_probe(struct device *dev, struct regmap *regmap)
 
 static void i_sabre_codec_remove(struct device *dev)
 {
-	snd_soc_unregister_codec(dev);
+	snd_soc_unregister_component(dev);
 }
 
 

@@ -31,16 +31,16 @@
 
 static int snd_rpi_i_sabre_q2m_init(struct snd_soc_pcm_runtime *rtd)
 {
-	struct snd_soc_codec *codec = rtd->codec;
+	struct snd_soc_component *component = rtd->codec_dai->component;
 	unsigned int value;
 
-	/* Device ID */
-	value = snd_soc_read(codec, ISABRECODEC_REG_01);
-	dev_info(codec->dev, "Audiophonics Device ID : %02X\n", value);
 
-	/* API revision */
+	value = snd_soc_read(codec, ISABRECODEC_REG_01);
+	dev_info(component->card->dev, "Audiophonics Device ID : %02X\n", value);
+
+
 	value = snd_soc_read(codec, ISABRECODEC_REG_02);
-	dev_info(codec->dev, "Audiophonics API revision : %02X\n", value);
+	dev_info(component->card->dev, "Audiophonics API revision : %02X\n", value);
 
 	return 0;
 }
