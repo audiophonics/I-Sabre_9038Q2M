@@ -128,7 +128,7 @@ static const struct snd_kcontrol_new i_sabre_codec_controls[] = {
 SOC_SINGLE_RANGE_TLV("Digital Playback Volume", ISABRECODEC_REG_20, 0, 0, 100, 1, volume_tlv),
 SOC_SINGLE("Digital Playback Switch", ISABRECODEC_REG_21, 0, 1, 1),
 SOC_ENUM("FIR Filter Type", i_sabre_fir_filter_type_enum),
-SOC_ENUM("I2S/SPDIF Select", i_sabre_iis_spdif_sel_enum),
+SOC_ENUM("Input Select", i_sabre_iis_spdif_sel_enum),
 };
 
 
