@@ -114,6 +114,9 @@ static SOC_ENUM_SINGLE_DECL(i_sabre_fir_filter_type_enum,
 static const char * const iis_spdif_sel_texts[] = {
 	"I2S",
 	"SPDIF",
+	"USB",
+	"Optical",
+	"Bluetooth",
 };
 
 static SOC_ENUM_SINGLE_DECL(i_sabre_iis_spdif_sel_enum,
